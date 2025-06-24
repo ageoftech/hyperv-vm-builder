@@ -25,8 +25,8 @@ PowerShell script for provisioning HyperV virtual machines from templates, with 
 The template is an existing HyperV virtual machine, with:
 - one administrative user set.
 - SSH access (user/password).
-- if **windows** based
--- gsudo installed: https://winget.run/pkg/gerardog/gsudo
+- if **windows** based:
+  - gsudo installed: https://winget.run/pkg/gerardog/gsudo
 
 ## ⚙️ Usage
 
@@ -56,13 +56,13 @@ The template is an existing HyperV virtual machine, with:
 
 ## 📁 Configuration
 
-The script expects a configuration directory named after the `ConfigName` parameter, which defines all VM provisioning parameters (e.g., template name, network, credentials, etc.).
+The script expects a configuration directory named after the `ConfigName` parameter, which defines all VM provisioning parameters (template name, network, credentials, etc.).
 
 Two samples are provided, for **linux** and **windows**, with:
 - **data** directory containing files copied to created VM
 - **scripts** directory containing shell scripts executed after VM creation
 - **update.sh** or **update.ps1** to update created VM
-- **get-infos.sh** or **get-infos.ps1** to get useful informations like version numbers, access tokens, ... depending on packages installed on created VM. These informations are stored in **logs** directory
+- **get-infos.sh** or **get-infos.ps1** to get useful informations like version numbers, access tokens, ... depending on packages installed on created VM. These informations are stored in **logs** directory.
 
 ## 📌 Requirements
 
