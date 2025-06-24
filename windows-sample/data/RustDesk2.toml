@@ -1,0 +1,8 @@
+rendezvous_server = 'rustdesk.somedomain.local'
+nat_type = 1
+serial = 0
+
+[options]
+custom-rendezvous-server = 'rustdesk.somedomain.local'
+key = 'rustdesk key'
+

@@ -91,7 +91,7 @@ class VMBuilder {
 	}
 		
 	# -------------------------------------------------------------------------------
-	# TO REDEFINE
+	# TO REDEFINE by subclasses
 	# -------------------------------------------------------------------------------
 	
 	# first putty command (to init ssh)
@@ -163,7 +163,7 @@ class VMBuilder {
 		$VM = [VMBuilder]::MainConfig.'Template.VMName'
 		$Fw = Get-VMFirmware -ComputerName $HHost -VMName $VM
 		$Fw | Out-Host
-		# ATTENTION SecureBootTemplate contient 'Windows' même avec un OS Linux
+		# WARNING SecureBootTemplate may contain 'Windows' even in case of Linux OS !
 		return ($Fw.SecureBoot -eq 'On') -and ($Fw.SecureBootTemplate -like '*Windows*')
 	}
 	
@@ -184,7 +184,7 @@ class VMBuilder {
 				[VMBuilder]::MainConfig.'Domain.Admin' = Read-Host "Login admin domaine" 
 			}
 			if ([VMBuilder]::MainConfig.'Domain.Password'.Length -eq 0) {
-				$Msg = "Password admin domaine " + [VMBuilder]::MainConfig.'Domain.Admin'
+				$Msg = "Domain admin password " + [VMBuilder]::MainConfig.'Domain.Admin'
 				$SecureText	= Read-Host $Msg -AsSecureString
 				[VMBuilder]::MainConfig.'Domain.Password' = [Runtime.InteropServices.Marshal]::PtrToStringAuto( `
 									[Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecureText) `
@@ -193,7 +193,7 @@ class VMBuilder {
 
 			# checks login/password of AD admin
 			if (-not ([VMBuilder]::TestADAuthentication([VMBuilder]::MainConfig.'Domain.Admin',[VMBuilder]::MainConfig.'Domain.Password'))) {
-				Write-Host 'Identite AD invalide'
+				Write-Host 'Invalid AD credential'
 				exit
 			}
 		}
@@ -352,8 +352,8 @@ class VMBuilder {
 	# creates VM
 	# -------------------------------------------------------------------------------
 	[void] InitVM() {
-		# création initiale sans disque attaché
-		$this.Log("Creation VM")
+		# creation 1st step
+		$this.Log("VM creation")
 		$CreatedVM = New-VM `
 							-ComputerName $this.VMHost `
 							-Name $this.VMName `
@@ -385,7 +385,7 @@ class VMBuilder {
 	# copies template VHD to create VM own disk
 	# -------------------------------------------------------------------------------
 	[void] CreateVMDisk() {
-		$this.Log("Copie et attribution disque depuis template")
+		$this.Log("Template disk copy")
 		$SourceVHD = Get-VMHardDiskDrive `
 							-VMName $this.Config.'Template.VMName' `
 							-ComputerName $this.Config.'Template.HyperVHost'
@@ -419,7 +419,7 @@ class VMBuilder {
 	# boot disk setup
 	# -------------------------------------------------------------------------------
 	[void] ConfigureVMDisk() {
-		$this.Log("Configuration disque de boot")
+		$this.Log("Boot disk setup")
 		$BootDrive = Get-VMHardDiskDrive `
 							-ComputerName $this.VMHost `
 							-VMName $this.VMName
@@ -469,7 +469,7 @@ class VMBuilder {
 	# net adapter setup
 	# -------------------------------------------------------------------------------
 	[void] ConfigureNetSwitch() {
-		$this.Log("Configuration reseau")
+		$this.Log("Network setup")
 		# VLAN
 		if ($this.Config.'VM.VLan' -eq '') {
 			Get-VM -ComputerName $this.VMHost -VMName $this.VMName `
@@ -687,7 +687,7 @@ class UbuntuVMBuilder : VMBuilder {
 		# enables all AD users login 
 		$Script += 'realm permit --all'
 		# AD group admin-linux is sudoer
-		$Script += "echo '%admin-linux@leuville.home\tALL=(ALL) ALL' > /etc/sudoers.d/domain_admins"
+		$Script += "echo '%admin-linux@" + $this.Config.'Domain.Name' + "\tALL=(ALL) ALL' > /etc/sudoers.d/domain_admins"
 		# checking
 		$Script += 'id ' + $this.Config.'Domain.Admin' + '@' + $this.Config.'Domain.Name'
 		$Script += 'realm list'	

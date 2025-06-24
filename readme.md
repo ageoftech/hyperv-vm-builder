@@ -12,6 +12,22 @@ PowerShell script for provisioning HyperV virtual machines from templates, with 
   - `WindowsVMBuilder`
   - `UbuntuVMBuilder`
 
+### Creation steps
+
+- creates a new VM replicated from template
+- executes a user-provided update script on the created VM
+- joins created VM to AD if option is activated
+- copies user-provided files on created VM file system
+- copies and executes user-provided scripts on created VM file system 
+
+## Templates
+
+The template is an existing HyperV virtual machine, with:
+- one administrative user set.
+- SSH access (user/password).
+- if **windows** based
+-- gsudo installed: https://winget.run/pkg/gerardog/gsudo
+
 ## ⚙️ Usage
 
 ```powershell
@@ -42,10 +58,17 @@ PowerShell script for provisioning HyperV virtual machines from templates, with 
 
 The script expects a configuration directory named after the `ConfigName` parameter, which defines all VM provisioning parameters (e.g., template name, network, credentials, etc.).
 
+Two samples are provided, for **linux** and **windows**, with:
+- **data** directory containing files copied to created VM
+- **scripts** directory containing shell scripts executed after VM creation
+- **update.sh** or **update.ps1** to update created VM
+- **get-infos.sh** or **get-infos.ps1** to get useful informations like version numbers, access tokens, ... depending on packages installed on created VM. These informations are stored in **logs** directory
+
 ## 📌 Requirements
 
 - PowerShell
-- Access to the virtualization platform supporting VM templates
+- putty on machine running VMBuilder.ps1
+- HyperV
 - Appropriate permissions to join/leave Active Directory (if using `-AD`)
 
 ## 📜 License
