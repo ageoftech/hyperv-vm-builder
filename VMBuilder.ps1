@@ -1,4 +1,4 @@
-<#
+apt<#
 --------------------------------------------------------------------------------------
  Script for provisioning a Windows VM from a template
 
@@ -687,7 +687,7 @@ class UbuntuVMBuilder : VMBuilder {
 		# enables all AD users login 
 		$Script += 'realm permit --all'
 		# AD group admin-linux is sudoer
-		$Script += "echo '%admin-linux@" + $this.Config.'Domain.Name' + "\tALL=(ALL) ALL' > /etc/sudoers.d/domain_admins"
+		$Script += "echo '%admin-linux@" + $this.Config.'Domain.Name' + "\tALL=(ALL:ALL) ALL' > /etc/sudoers.d/domain_admins"
 		# checking
 		$Script += 'id ' + $this.Config.'Domain.Admin' + '@' + $this.Config.'Domain.Name'
 		$Script += 'realm list'	
